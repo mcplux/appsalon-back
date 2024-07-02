@@ -4,7 +4,8 @@ from .models import User, Token
 # Register your models here.
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('id', 'email', 'is_verified', 'is_admin')
+    list_display = ('username', 'email', 'is_verified', 'is_admin')
+    readonly_fields = ('password', 'last_login', 'date_joined')
 
 @admin.register(Token)
 class TokenAdmin(admin.ModelAdmin):
