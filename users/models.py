@@ -13,6 +13,7 @@ class User(AbstractUser):
 class Token(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     token = models.CharField(max_length=255)
+    expires_on = models.DateTimeField()
 
     def __str__(self):
         return self.token
