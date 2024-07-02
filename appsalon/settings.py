@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'services',
+    'users',
 ]
 
 MIDDLEWARE = [
@@ -140,3 +141,5 @@ CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS').split(',')
 
 if DEBUG:
     CORS_ALLOW_ALL_ORIGINS = True
+
+AUTH_USER_MODEL = 'users.User'
