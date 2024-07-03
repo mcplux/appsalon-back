@@ -11,7 +11,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('email', 'username', 'password', 'first_name')
+        fields = ('email', 'password', 'first_name')
 
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
@@ -25,10 +25,13 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
 # Custom TokenObtainPairSerializer
 class LoginSerializer(TokenObtainPairSerializer):
+    email = serializers.EmailField(required=True)
+    password = serializers.CharField(required=True, write_only=True)
+
     def validate(self, attrs):
-        username = attrs.get('username')
+        email = attrs.get('email')
         password = attrs.get('password')
-        user = User.objects.filter(username=username).first()
+        user = User.objects.filter(email=email).first()
 
         if user is None:
             raise AuthenticationFailed('Invalid credentials')
