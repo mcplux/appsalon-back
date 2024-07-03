@@ -7,7 +7,8 @@ from django.utils.html import strip_tags
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers import UserRegisterSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
+from .serializers import UserRegisterSerializer, LoginSerializer
 from .models import Token
 
 # Create your views here.
@@ -58,3 +59,6 @@ class VerifyAccountView(APIView):
         token.delete()
 
         return Response({ 'message': 'Account verified succesfully' })
+
+class LoginView(TokenObtainPairView):
+    serializer_class = LoginSerializer
