@@ -1,10 +1,12 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.conf import settings
+from django.utils import timezone
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from rest_framework import generics, status
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from .serializers import UserRegisterSerializer
 from .models import Token
 
@@ -35,3 +37,24 @@ class UserRegisterView(generics.CreateAPIView):
         
 
         return Response({ 'message': 'User created succesfully' })
+
+class VerifyAccountView(APIView):
+    def get(self, request, token_str):
+        token = get_object_or_404(Token, token=token_str)
+        user = token.user
+
+        # If token is expired and user is not verified, delete user
+        if token.expires_on < timezone.now():
+            if not user.is_verified:
+                user.delete()
+            return Response({ 'message': 'Token expired' }, status=status.HTTP_400_BAD_REQUEST)
+
+        # If user is already verified, return error
+        if user.is_verified:
+            return Response({ 'message': 'Account already verified' }, status=status.HTTP_400_BAD_REQUEST)
+
+        user.is_verified = True
+        user.save()
+        token.delete()
+
+        return Response({ 'message': 'Account verified succesfully' })
