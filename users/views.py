@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render
 from django.conf import settings
 from django.utils import timezone
 from django.core.mail import EmailMultiAlternatives
@@ -37,11 +37,14 @@ class UserRegisterView(generics.CreateAPIView):
             return Response({ 'message': 'An error ocurred, try again later' }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
 
-        return Response({ 'message': 'User created succesfully' })
+        return Response({ 'message': 'User created succesfully, verify your email' })
 
 class VerifyAccountView(APIView):
     def get(self, request, token_str):
-        token = get_object_or_404(Token, token=token_str)
+        token = Token.objects.filter(token=token_str).first()
+        if token is None:
+            return Response({ 'message': 'Invalid token' }, status=status.HTTP_400_BAD_REQUEST)
+
         user = token.user
 
         # If token is expired and user is not verified, delete user
