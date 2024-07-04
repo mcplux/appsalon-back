@@ -17,8 +17,17 @@ class UserRegisterView(generics.CreateAPIView):
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+        
+        if not serializer.is_valid():
+            print(serializer.errors)
+            if 'email' in serializer.errors and 'user with this email already exists.' in serializer.errors['email']:
+                return Response({ 'message': 'User is already registered' }, status=status.HTTP_400_BAD_REQUEST)
+            elif 'email' in serializer.errors or 'password' in serializer.errors or 'first_name' in serializer.errors:
+                return Response({ 'message': 'All fields are required' }, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
         user = serializer.save()
+
         try:
             token = Token.objects.get(user=user)
             url = f'{settings.FRONTEND_URL}/auth/verify-account/{token.token}' # Frontend verify account url

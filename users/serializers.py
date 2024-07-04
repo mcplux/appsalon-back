@@ -12,6 +12,11 @@ class UserRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('email', 'password', 'first_name')
+        extra_kwargs = {
+            'first_name': { 'error_messages': { 'required': 'All fileds are required' } },
+            'email': { 'error_messages': { 'required': 'All fileds are required' } },
+            'password': { 'error_messages': { 'required': 'All fileds are required' } }
+        }
 
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
