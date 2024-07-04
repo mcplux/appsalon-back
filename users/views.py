@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
-from rest_framework import generics, status
+from rest_framework import generics, status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -74,3 +74,10 @@ class VerifyAccountView(APIView):
 
 class LoginView(TokenObtainPairView):
     serializer_class = LoginSerializer
+
+class UserView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        return Response({ 'id': user.id, 'email': user.email, 'first_name': user.first_name, 'is_admin': user.is_admin })
