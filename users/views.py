@@ -52,7 +52,7 @@ class VerifyAccountView(APIView):
     def get(self, request, token_str):
         token = Token.objects.filter(token=token_str).first()
         if token is None:
-            return Response({ 'message': 'Invalid token' }, status=status.HTTP_400_BAD_REQUEST)
+            return Response({ 'message': 'Invalid token' }, status=status.HTTP_401_UNAUTHORIZED)
 
         user = token.user
 
@@ -60,11 +60,11 @@ class VerifyAccountView(APIView):
         if token.expires_on < timezone.now():
             if not user.is_verified:
                 user.delete()
-            return Response({ 'message': 'Token expired' }, status=status.HTTP_400_BAD_REQUEST)
+            return Response({ 'message': 'Token expired' }, status=status.HTTP_401_UNAUTHORIZED)
 
         # If user is already verified, return error
         if user.is_verified:
-            return Response({ 'message': 'Account already verified' }, status=status.HTTP_400_BAD_REQUEST)
+            return Response({ 'message': 'Account already verified' }, status=status.HTTP_401_UNAUTHORIZED)
 
         user.is_verified = True
         user.save()
