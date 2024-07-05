@@ -9,6 +9,25 @@ from .models import Appointment
 class AppointmentListCreateView(views.APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    def get(self, request):
+        date = request.query_params.get('date')
+        if date is None:
+            return Response({'error': 'Date is required'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            appointments = Appointment.objects.filter(date=date)
+            serializer = AppointmentSerializer(appointments, many=True)
+            response = []
+            for appointment in serializer.data:
+                response.append({
+                    'id': appointment['id'],
+                    'time': appointment['time'],
+                })
+
+            return Response(response, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response({'error': 'Invalid date'}, status=status.HTTP_400_BAD_REQUEST)
+
     def post(self, request):
         serializer = AppointmentSerializer(data=request.data)
         if not serializer.is_valid():
