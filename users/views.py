@@ -81,3 +81,29 @@ class UserView(APIView):
     def get(self, request):
         user = request.user
         return Response({ 'id': user.id, 'email': user.email, 'first_name': user.first_name, 'is_admin': user.is_admin })
+
+class UserAppointmentsView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        appointments = user.appointments.filter(date__gte=timezone.now()).order_by('date')
+        appointments = [
+            {
+                'id': appointment.id,
+                'date': appointment.date,
+                'time': appointment.time,
+                'services': [
+                    {
+                        'id': service.id,
+                        'name': service.name,
+                        'price': service.price
+                    }
+                    for service in appointment.services.all()
+                ],
+                'total_amount': appointment.total_amount
+            }
+            for appointment in appointments
+        ]
+        
+        return Response(appointments, status=status.HTTP_200_OK)
