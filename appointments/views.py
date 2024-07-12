@@ -16,13 +16,12 @@ class AppointmentListCreateView(views.APIView):
         try:
             appointments = Appointment.objects.filter(date=date)
             serializer = AppointmentSerializer(appointments, many=True)
-            response = []
-            for appointment in serializer.data:
-                response.append({
+            response = [
+                {
                     'id': appointment['id'],
                     'time': appointment['time'],
-                })
-
+                } for appointment in serializer.data
+            ]
             return Response(response, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
