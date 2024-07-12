@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import views, generics, permissions, status
 from rest_framework.response import Response
-from .serializer import AppointmentSerializer
+from .serializer import AppointmentSerializer, AppointmentDetailSerializer
 from .models import Appointment
 
 # Create your views here.
@@ -42,7 +42,7 @@ class AppointmentRetrieveUpdateDestroy(views.APIView):
         user = request.user
         try:
             appointment = Appointment.objects.get(pk=pk, user=user)
-            serializer = AppointmentSerializer(appointment)
+            serializer = AppointmentDetailSerializer(appointment)
 
             return Response(serializer.data, status=status.HTTP_200_OK)
 
