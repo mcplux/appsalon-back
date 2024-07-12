@@ -34,3 +34,17 @@ class AppointmentListCreateView(views.APIView):
             return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
         serializer.save(user=request.user)
         return Response({'message': 'Appointment created succesfully'}, status=status.HTTP_201_CREATED)
+
+class AppointmentRetrieveUpdateDestroy(views.APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, pk):
+        user = request.user
+        try:
+            appointment = Appointment.objects.get(pk=pk, user=user)
+            serializer = AppointmentSerializer(appointment)
+
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except Appointment.DoesNotExist:
+            return Response({'message': 'Appointment not found'}, status=status.HTTP_404_NOT_FOUND)
