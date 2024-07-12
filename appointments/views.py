@@ -65,3 +65,13 @@ class AppointmentRetrieveUpdateDestroy(views.APIView):
         except Appointment.DoesNotExist:
             return Response({'message': 'Appointment not found'}, status=status.HTTP_404_NOT_FOUND)
 
+    def delete(self, request, pk):
+        user = request.user
+        try:
+            appointment = Appointment.objects.get(pk=pk, user=user)
+            appointment.delete()
+            print('Hello world')
+            return Response({'message': 'Appointment deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+        
+        except Appointment.DoesNotExist:
+            return Response({'message': 'Appointment not found'}, status=status.HTTP_404_NOT_FOUND)
