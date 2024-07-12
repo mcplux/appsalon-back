@@ -48,3 +48,20 @@ class AppointmentRetrieveUpdateDestroy(views.APIView):
 
         except Appointment.DoesNotExist:
             return Response({'message': 'Appointment not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+    def put(self, request, pk):
+        user = request.user
+        data = request.data
+        try:
+            appointment = Appointment.objects.get(pk=pk, user=user)
+            serializer = AppointmentSerializer(appointment, data=data)
+            if not serializer.is_valid():
+                print(serializer.errors)
+                return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            
+            serializer.save()
+            return Response({'message': 'Appointment updated successfully'}, status=status.HTTP_200_OK)
+        
+        except Appointment.DoesNotExist:
+            return Response({'message': 'Appointment not found'}, status=status.HTTP_404_NOT_FOUND)
+
