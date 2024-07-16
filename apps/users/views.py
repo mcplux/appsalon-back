@@ -80,7 +80,7 @@ class UserView(APIView):
 
     def get(self, request):
         user = request.user
-        return Response({ 'id': user.id, 'email': user.email, 'first_name': user.first_name, 'is_admin': user.is_admin })
+        return Response({ 'id': user.id, 'email': user.email, 'first_name': user.first_name, 'is_staff': user.is_staff })
 
 class UserAppointmentsView(APIView):
     permission_classes = [permissions.IsAuthenticated]
