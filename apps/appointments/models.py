@@ -1,6 +1,6 @@
 from django.db import models
 from apps.services.models import Service
-from users.models import User
+from apps.users.models import User
 
 # Create your models here.
 class Appointment(models.Model):
