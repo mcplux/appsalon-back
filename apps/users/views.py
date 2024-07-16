@@ -36,7 +36,7 @@ class UserRegisterView(generics.CreateAPIView):
             subject = 'AppSalon - Verify your account'
             html_content = render_to_string('users/verify_account.html', { 'url': url })
             text_content = strip_tags(html_content)
-            email = EmailMultiAlternatives(subject, text_content, 'admin@appsalon.com', [user.email])
+            email = EmailMultiAlternatives(subject, text_content, settings.EMAIL_HOST_USER, [user.email])
             email.attach_alternative(html_content, 'text/html')
             email.send()
 
