@@ -16,15 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from rest_framework import routers
-from apps.services.views import ServiceViewSet
-
-router = routers.DefaultRouter()
-router.register(r'services', ServiceViewSet, basename='service')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include(router.urls)),
+    path('api/services/', include('apps.services.urls')),
     path('api/auth/', include('apps.users.urls')),
     path('api/appointments/', include('apps.appointments.urls')),
 ]

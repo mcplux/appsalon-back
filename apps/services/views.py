@@ -1,9 +1,9 @@
-from django.shortcuts import render
-from rest_framework import viewsets
+from rest_framework import permissions, generics
 from .serializers import ServiceSerializer
 from .models import Service
 
 # Create your views here.
-class ServiceViewSet(viewsets.ModelViewSet):
+class ServiceListView(generics.ListAPIView):
+    permission_classes = [permissions.IsAuthenticated]
     serializer_class = ServiceSerializer
     queryset = Service.objects.all()
