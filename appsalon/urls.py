@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
-from services.views import ServiceViewSet
+from apps.services.views import ServiceViewSet
 
 router = routers.DefaultRouter()
 router.register(r'services', ServiceViewSet, basename='service')

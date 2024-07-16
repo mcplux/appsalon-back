@@ -1,5 +1,5 @@
 from django.db import models
-from services.models import Service
+from apps.services.models import Service
 from users.models import User
 
 # Create your models here.

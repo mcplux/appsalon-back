@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Appointment
-from services.serializers import ServiceSerializer
+from apps.services.serializers import ServiceSerializer
 
 class AppointmentSerializer(serializers.ModelSerializer):
     class Meta:
