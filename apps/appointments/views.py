@@ -35,43 +35,50 @@ class AppointmentListCreateView(views.APIView):
         serializer.save(user=request.user)
         return Response({'message': 'Appointment created succesfully'}, status=status.HTTP_201_CREATED)
 
-class AppointmentRetrieveUpdateDestroy(views.APIView):
+class AppointmentRetrieveUpdateDestroyView(views.APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    # Get appointment by pk and user
+    def get_object(self, pk, user):
+        try:
+            return Appointment.objects.get(pk=pk, user=user)
+        except Appointment.DoesNotExist:
+            return None
+
+    # Retrieve
     def get(self, request, pk):
-        user = request.user
-        try:
-            appointment = Appointment.objects.get(pk=pk, user=user)
-            serializer = AppointmentDetailSerializer(appointment)
-
-            return Response(serializer.data, status=status.HTTP_200_OK)
-
-        except Appointment.DoesNotExist:
-            return Response({'message': 'Appointment not found'}, status=status.HTTP_404_NOT_FOUND)
+        # Verify if the appointment exists
+        appointment = self.get_object(pk, request.user)
+        if appointment is None:
+            return Response({'error': 'Appointment not found'}, status=status.HTTP_404_NOT_FOUND)
         
+        # Return appointment details
+        serializer = AppointmentDetailSerializer(appointment)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    # Update
     def put(self, request, pk):
-        user = request.user
-        data = request.data
-        try:
-            appointment = Appointment.objects.get(pk=pk, user=user)
-            serializer = AppointmentSerializer(appointment, data=data)
-            if not serializer.is_valid():
-                print(serializer.errors)
-                return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-            
-            serializer.save()
-            return Response({'message': 'Appointment updated successfully'}, status=status.HTTP_200_OK)
+        # Verify if the appointment exists
+        appointment = self.get_object(pk, request.user)
+        if appointment is None:
+            return Response({'error': 'Appointment not found'}, status=status.HTTP_404_NOT_FOUND)
         
-        except Appointment.DoesNotExist:
-            return Response({'message': 'Appointment not found'}, status=status.HTTP_404_NOT_FOUND)
+        # Verify is the request is valid
+        serializer = AppointmentSerializer(appointment, data=request.data)
+        if not serializer.is_valid():
+            return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Save appointment
+        serializer.save()
+        return Response({'message': 'Appointment updated successfully'}, status=status.HTTP_200_OK)
 
+    # Delete
     def delete(self, request, pk):
-        user = request.user
-        try:
-            appointment = Appointment.objects.get(pk=pk, user=user)
-            appointment.delete()
-            print('Hello world')
-            return Response({'message': 'Appointment deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+        # Verify if the appointment exists
+        appointment = self.get_object(pk, request.user)
+        if appointment is None:
+            return Response({'error': 'Appointment not found'}, status=status.HTTP_404_NOT_FOUND)
         
-        except Appointment.DoesNotExist:
-            return Response({'message': 'Appointment not found'}, status=status.HTTP_404_NOT_FOUND)
+        # Delete appointment
+        appointment.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
